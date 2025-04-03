@@ -1,0 +1,116 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard">
+        <h2>Sarah Smith - Pregnancy & Diabetes</h2>
+
+        <div class="grid">
+            <div class="card">
+                <h3>Blood Glucose Levels</h3>
+                <canvas id="glucoseChart"></canvas>
+            </div>
+            <div class="card">
+                <h3>Heart Rate</h3>
+                <canvas id="heartRateChart"></canvas>
+            </div>
+        </div>
+
+        <div class="grid vitals">
+            <div class="card"><h3>Blood Pressure</h3><p id="bp">130/84 mmHg</p></div>
+            <div class="card"><h3>Fetal Heart Rate</h3><p id="fhr">150 bpm</p></div>
+            <div class="card"><h3>Oxygen Saturation</h3><p id="osat">97%</p></div>
+            <div class="card"><h3>Weight</h3><p id="weight">176 lb</p></div>
+            <div class="card"><h3>Sleep Duration</h3><p id="sleep">7h 40m</p></div>
+            <div class="card"><h3>Activity Level</h3><p id="steps">5,284 steps</p></div>
+            <div class="card"><h3>Contractions</h3><p id="contractions">Mild</p></div>
+            <div class="card"><h3>Ketone Levels</h3><p id="ketones">0.3 mmol/L</p></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const glucoseCtx = document.getElementById("glucoseChart").getContext("2d");
+            const heartRateCtx = document.getElementById("heartRateChart").getContext("2d");
+
+            let timeLabels = ["08:00", "12:00", "16:00", "20:00"];
+            let glucoseLevels = [145, 130, 110, 95];
+            let heartRates = [82, 78, 76, 74];
+
+            function createChart(ctx, label, color, data) {
+                return new Chart(ctx, {
+                    type: "line",
+                    data: {
+                        labels: timeLabels,
+                        datasets: [{
+                            label: label,
+                            data: data,
+                            borderColor: color,
+                            borderWidth: 2,
+                            fill: false,
+                            tension: 0.4  // Smooth curve
+                        }]
+                    },
+                    options: {
+                        animation: {
+                            duration: 1000,  // Smooth animation duration
+                            easing: 'easeInOutCubic'  // Smoother transition
+                        },
+                        responsive: true,
+                        scales: {
+                            x: { ticks: { color: "#000" } },
+                            y: { ticks: { color: "#000" } }
+                        }
+                    }
+                });
+            }
+
+            const glucoseChart = createChart(glucoseCtx, "Glucose", "#E63946", glucoseLevels);
+            const heartRateChart = createChart(heartRateCtx, "Heart Rate", "#1D3557", heartRates);
+
+            function updateVitals() {
+                const now = new Date();
+                const newTime = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
+
+                const newGlucose = Math.floor(Math.random() * 40) + 90;
+                const newHeartRate = Math.floor(Math.random() * 15) + 70;
+
+                timeLabels.push(newTime);
+                glucoseLevels.push(newGlucose);
+                heartRates.push(newHeartRate);
+
+                if (timeLabels.length > 5) timeLabels.shift();
+                if (glucoseLevels.length > 5) glucoseLevels.shift();
+                if (heartRates.length > 5) heartRates.shift();
+
+                glucoseChart.data.labels = timeLabels;
+                glucoseChart.data.datasets[0].data = glucoseLevels;
+                glucoseChart.update();
+
+                heartRateChart.data.labels = timeLabels;
+                heartRateChart.data.datasets[0].data = heartRates;
+                heartRateChart.update();
+
+                // Update text vitals
+                document.getElementById("bp").textContent = `${Math.floor(Math.random() * 20) + 110}/${Math.floor(Math.random() * 10) + 70} mmHg`;
+                document.getElementById("fhr").textContent = `${Math.floor(Math.random() * 10) + 140} bpm`;
+                document.getElementById("osat").textContent = `${Math.floor(Math.random() * 3) + 95}%`;
+                document.getElementById("weight").textContent = `${Math.floor(Math.random() * 5) + 170} lb`;
+                document.getElementById("sleep").textContent = `${Math.floor(Math.random() * 3) + 6}h ${Math.floor(Math.random() * 40) + 20}m`;
+                document.getElementById("steps").textContent = `${Math.floor(Math.random() * 2000) + 4000} steps`;
+                document.getElementById("contractions").textContent = Math.random() > 0.5 ? "Mild" : "Moderate";
+                document.getElementById("ketones").textContent = (Math.random() * 1.5).toFixed(1) + " mmol/L";
+            }
+
+            setInterval(updateVitals, 5000);
+        });
+    </script>
+</body>
+</html>
